@@ -396,10 +396,13 @@ public class TrackManager extends AppCompatActivity
 				// stop the active track
 				stopActiveTrack();
 				break;
-
 			case R.id.trackmgr_contextmenu_resume:
-				// let's activate the track and start the TrackLogger activity
-				setActiveTrack(contextMenuSelectedTrackid);
+				// Activate the selected track if it is different from the currently active one
+				// (or if no track is currently active)
+				if (currentTrackId != contextMenuSelectedTrackid) {
+					setActiveTrack(contextMenuSelectedTrackid);
+				}
+				// Start the TrackLogger activity to begin logging the selected track
 				i = new Intent(this, TrackLogger.class);
 				i.putExtra(TrackContentProvider.Schema.COL_TRACK_ID, contextMenuSelectedTrackid);
 				tryStartTrackLogger(i);
@@ -688,6 +691,7 @@ public class TrackManager extends AppCompatActivity
 		if(currentTrackId != TRACK_ID_NO_TRACK){
 			// we send a broadcast to inform all registered services to stop tracking
 			Intent intent = new Intent(OSMTracker.INTENT_STOP_TRACKING);
+			intent.setPackage(this.getPackageName());
 			sendBroadcast(intent);
 
 			// need to get sure, that the database is up to date
